@@ -33,6 +33,6 @@ Reverse lookup of 203.0.113.7:
 
 ## Usage
 
-- Add subdomains to `dns_search.txt`, one per line.
+- Add subdomains to `sub_domains.txt`, one per line.
 - Set your base domain in the script (domain = "example.com").
 - Run the script to generate the domain resolution tree.
