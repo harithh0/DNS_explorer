@@ -1,5 +1,5 @@
 ## About
-- Maps out a domain's common sub-domains IP addresses and names
+- This tool recursively maps out a domain's common subdomains, their IP addresses, and associated reverse DNS (PTR) records. It builds a tree-like structure showing relationships between domains and their resolved hosts.
 
 Example workflow
 ```yaml
@@ -29,3 +29,10 @@ Reverse lookup of 203.0.113.7:
 
 ...and so on.
 ```
+
+
+## Usage
+
+- Add subdomains to `dns_search.txt`, one per line.
+- Set your base domain in the script (domain = "example.com").
+- Run the script to generate the domain resolution tree.
