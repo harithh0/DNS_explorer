@@ -8,7 +8,8 @@ res = dns.resolver.Resolver()
 res.nameservers = ["8.8.8.8"]
 res.port = 53
 
-domain = "uca.edu"
+# domain = "uca.edu"
+domain = "google.com"
 domains_and_results = {}
 
 with open("offensive_dns_exploration/dns_search.txt", "r") as f:
@@ -26,28 +27,29 @@ def reverseDnsLookup(address: str) -> str:
     return ptr_record[0]
 
 
-def dnsRequest(domain: str):
+def dnsRequest(domain: str) -> None:
     try:
         dns_result = res.resolve(domain)
-        addresses_for_domain = [addr.to_text() for addr in dns_result]
-        print(f"{domain} {addresses_for_domain}")
-        for address in addresses_for_domain:
-            try:
-                rev_results = reverseDnsLookup(address)
-                print(rev_results)
-            except Exception as e:
-                print("no PTR record found for address:", address)
-                rev_results = []
-
-            print(f"sub for {address} -> {rev_results}")
-            if domain in domains_and_results:
-                domains_and_results[domain].append({address: rev_results})
-            else:
-                domains_and_results[domain] = [{address: rev_results}]
     except Exception as e:
-        print(str(e))
-        pass
-        # print(f"{domain} couldn't find")
+        # couldn't resolve domain
+        # print(str(e))
+        return
+    addresses_for_domain = [addr.to_text() for addr in dns_result]
+    print(f"{domain} {addresses_for_domain}")
+    for address in addresses_for_domain:
+        try:
+            rev_results = reverseDnsLookup(address)
+            print(rev_results)
+        except Exception as e:
+            print("no PTR record found for address:", address)
+            rev_results = []
+
+        print(f"sub for {address} -> {rev_results}")
+        if domain in domains_and_results:
+            domains_and_results[domain].append({address: rev_results})
+        else:
+            domains_and_results[domain] = [{address: rev_results}]
+    # print(f"{domain} couldn't find")
 
 
 for sub_domain in sub_domains:
@@ -55,3 +57,15 @@ for sub_domain in sub_domains:
     dnsRequest(created_req)
 print("-" * 100)
 print(domains_and_results)
+print("-" * 100)
+for domain, ip_entries in domains_and_results.items():
+    print(f"{domain}")
+    for entry in ip_entries:
+        for ip, rev in entry.items():
+            connector = "├──"
+            if rev:
+                print(f"│   {connector} {ip}")
+                print(f"│   │   └── {rev}")
+            else:
+                print(f"│   {connector} {ip}")
+                print(f"│   │   └── [no PTR]")
