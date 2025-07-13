@@ -18,10 +18,10 @@ logger.add(
 )
 
 res = dns.resolver.Resolver()
-res.nameservers = ["8.8.4.4"]
-res.port = 53
+res.nameservers = ["127.0.0.1"]
+res.port = 8053
 
-domain = "google.com"
+domain = "example.com"
 domains_and_results = {}
 script_dir = os.path.dirname(__file__)
 sub_domain_file_name = "sub_domains.txt"
@@ -73,9 +73,18 @@ def dnsRequest(domain: str, main_domain: Union[str | None] = None) -> None:
         present = True
     try:
         dns_result = res.resolve(domain)
-    except Exception as e:
-        # couldn't resolve domain
-        # print(str(e))
+
+    except (dns.resolver.NXDOMAIN, dns.exception.Timeout):
+        # INFO: The domain does not exist at all in DNS. (That domain never existed)
+        # The authoritative name servers confirmed that the domain isn’t in the zone file
+
+        # domains[domain] = "Does not exist"
+        return
+    except dns.resolver.NoAnswer:
+        # INFO: The domain exists, but there is no DNS record of the type you asked for (e.g., A, AAAA, etc.)
+        # The DNS resolver successfully contacted the authoritative server, but got an empty response
+
+        # domains[domain] = "Exist's but no DNS record of type"
         return
 
     addresses_for_domain = list(set([addr.to_text() for addr in dns_result]))
@@ -85,19 +94,9 @@ def dnsRequest(domain: str, main_domain: Union[str | None] = None) -> None:
     for address in addresses_for_domain:
         try:
             rev_results = reverseDnsLookup(address)
-        except (dns.resolver.NXDOMAIN, dns.exception.Timeout):
-            # INFO: The domain does not exist at all in DNS. (That domain never existed)
-            # The authoritative name servers confirmed that the domain isn’t in the zone file
-
-            # domains[domain] = "Does not exist"
+        except Exception as e:
+            # ptr record couldn't be found for this domain
             continue
-        except dns.resolver.NoAnswer:
-            # INFO: The domain exists, but there is no DNS record of the type you asked for (e.g., A, AAAA, etc.)
-            # The DNS resolver successfully contacted the authoritative server, but got an empty response
-
-            # domains[domain] = "Exist's but no DNS record of type"
-            continue
-
         logger.debug(f"sub for {address} -> {rev_results}")
 
         if present:
