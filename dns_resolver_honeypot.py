@@ -18,6 +18,13 @@ logger.add(sys.stderr, format="{time:HH:mm} {level} {message}", level="INFO")
 """
 If we own a specific IP block like 219.20.120.0/24 and a main domain, we can make it where we have our valid subdomains on valid IP addresses that point to them, and
 honey subdomains that point to an IP address that can be running a honey pot service that looks legit.
+
+Real world approach:
+- Use DNS provider for legit domain names
+- Use Honey Resolver for illegitimate hostnames, by forwarding DNS queries to the Honey domains to the Honey Resolver via your DNS provider:
+    trap.example.com    NS    → ns1.trap.example.com
+    ns1.trap.example.com A    → YOUR_PUBLIC_IP
+    - The resolver then directly queries ns1.trap.example.com (where the Honey Resolver will be running) if the user does a DNS request to trap.example.com
 """
 
 domain = "example.com"
