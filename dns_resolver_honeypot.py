@@ -1,3 +1,7 @@
+"""
+Honeypot DNS Resolver for redirecting unavailable domains to honey IP addresses
+"""
+
 import sys
 
 from dnslib import *
@@ -61,12 +65,13 @@ class HoneyResolver:
         return reply
 
 
-resolver = HoneyResolver()
-server = DNSServer(resolver, port=port, address=host)
+if __name__ == "__main__":
+    resolver = HoneyResolver()
+    server = DNSServer(resolver, port=port, address=host)
 
-try:
-    logger.info("Starting DNS server...")
-    server.start()
-except KeyboardInterrupt:
-    logger.info("Stopping DNS server...")
-    server.stop()
+    try:
+        logger.info("Starting DNS server...")
+        server.start()
+    except KeyboardInterrupt:
+        logger.info("Stopping DNS server...")
+        server.stop()
