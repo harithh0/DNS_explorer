@@ -18,8 +18,8 @@ logger.add(
 )
 
 res = dns.resolver.Resolver()
-res.nameservers = ["127.0.0.1"]
-res.port = 8053
+res.nameservers = ["1.1.1.1"]
+res.port = 53
 
 domain = "example.com"
 domains_and_results = {}
