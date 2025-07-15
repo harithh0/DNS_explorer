@@ -88,6 +88,7 @@ class HoneyResolver:
             # indicating that we don't support this query (NOANSWER)
             reply.header.rcode = RCODE.NOERROR
             return reply
+
         # Builds reply specific to the request (template DNS response based on the incoming request)
         if subdomain != ".":
             if subdomain in subdomains:
